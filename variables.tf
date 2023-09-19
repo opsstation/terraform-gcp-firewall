@@ -45,7 +45,7 @@ variable "direction" {
 
 variable "disabled" {
   type    = bool
-  default = true
+  default = false
 }
 
 variable "priority" {
