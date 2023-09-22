@@ -1,5 +1,5 @@
 provider "google" {
-  project = "XXXXXXXXXXXXXXXXXXXXX"
+  project = "opz0-397319"
   region  = "asia-northeast1"
   zone    = "asia-northeast1-a"
 }
@@ -9,7 +9,7 @@ module "vpc" {
   name                                      = "testk"
   environment                               = "test"
   label_order                               = ["name", "environment"]
-  project                                   = "XXXXXXXXXXXXXXXXX"
+  project                                   = "opz0-397319"
   mtu                                       = 1460
   routing_mode                              = "REGIONAL"
   google_compute_network_enabled            = true
@@ -19,17 +19,18 @@ module "vpc" {
 
 #############################################(firewall)#################################################
 module "firewall" {
-  source        = "../"
+  source        = "./../."
   name          = "app"
-  environment   = "testing"
+  environment   = "test"
   label_order   = ["name", "environment"]
-  project_id    = "XXXXXXXXXXXXXXXXX"
+  project_id    = "opz0-397319"
   network       = module.vpc.vpc_id
   priority      = 1000
   source_ranges = ["0.0.0.0/0"]
+
   allow = [
     { protocol = "tcp"
-      ports    = ["22", "80", "443"]
+      ports    = ["22", "80"]
     }
   ]
 }

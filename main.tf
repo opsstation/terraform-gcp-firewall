@@ -7,15 +7,15 @@ module "labels" {
   repository  = var.repository
 }
 
-#####################################################
+###############################################(google_compute_firewall)####################################
+
 resource "google_compute_firewall" "default" {
-  count     = var.google_compute_firewall_enabled && var.enabled ? 1 : 0
+  count     = var.enabled && var.firewall_enabled ? 1 : 0
   name      = format("%s-firewall", module.labels.id)
   network   = var.network
   direction = var.direction
   disabled  = var.disabled
   priority  = var.priority
-
 
   dynamic "allow" {
     for_each = var.allow
@@ -34,6 +34,5 @@ resource "google_compute_firewall" "default" {
     }
   }
 
-
-  source_tags = ["web"]
+  source_ranges = var.source_ranges
 }
