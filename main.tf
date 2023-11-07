@@ -1,12 +1,13 @@
 module "labels" {
-  source = "git::git@github.com:opsstation/terraform-gcp-labels.git?ref=master"
+  source      = "git::git@github.com:opsstation/terraform-gcp-labels.git?ref=master"
   name        = var.name
   environment = var.environment
   label_order = var.label_order
   managedby   = var.managedby
   repository  = var.repository
 }
-
+data "google_client_config" "current" {
+}
 ###############################################(google_compute_firewall)####################################
 
 resource "google_compute_firewall" "default" {
@@ -16,6 +17,7 @@ resource "google_compute_firewall" "default" {
   direction = var.direction
   disabled  = var.disabled
   priority  = var.priority
+  project   = data.google_client_config.current.project
 
   dynamic "allow" {
     for_each = var.allow
