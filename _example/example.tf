@@ -1,12 +1,12 @@
 provider "google" {
-  project = "opz0-397319"
+  project = "local-concord-408802"
   region  = "asia-northeast1"
   zone    = "asia-northeast1-a"
 }
 ###############################################(vpc)##################################################
 module "vpc" {
-  source                                    = "git::git@github.com:opsstation/terraform-gcp-vpc.git?ref=master"
-  name                                      = "testk"
+  source                                    = "git::git@github.com:opsstation/terraform-gcp-vpc.git?ref=v1.0.0"
+  name                                      = "dev"
   environment                               = "test"
   label_order                               = ["name", "environment"]
   mtu                                       = 1460
@@ -18,8 +18,8 @@ module "vpc" {
 
 #############################################(firewall)#################################################
 module "firewall" {
-  source        = "./../."
-  name          = "app"
+  source        = "./../"
+  name          = "dev"
   environment   = "test"
   label_order   = ["name", "environment"]
   network       = module.vpc.vpc_id

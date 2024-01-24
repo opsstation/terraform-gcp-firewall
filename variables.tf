@@ -18,7 +18,7 @@ variable "repository" {
 
 variable "managedby" {
   type        = string
-  default     = ""
+  default     = "opsstation"
   description = "ManagedBy'opsstation'."
 }
 
@@ -81,6 +81,3 @@ variable "source_ranges" {
   default     = []
   description = "(Optional) If source ranges are specified, the firewall will apply only to traffic that has source IP address in these ranges."
 }
-
-
-
