@@ -75,7 +75,7 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | 4.82.0 |
+| <a name="provider_google"></a> [google](#provider\_google) | >= 3.50, < 5.13.0 |
 
 ## Modules
 
