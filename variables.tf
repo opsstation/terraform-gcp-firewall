@@ -1,14 +1,15 @@
+#Module      : LABEL
+#Description : Terraform label module variables.
+variable "name" {
+  type        = string
+  default     = "OpsStation"
+  description = "Name  (e.g. `app` or `cluster`)."
+}
+
 variable "environment" {
   type        = string
   default     = ""
   description = "Environment (e.g. `prod`, `dev`, `staging`)."
-}
-
-
-variable "label_order" {
-  type        = list(any)
-  default     = ["name", "environment"]
-  description = "Label order, e.g. sequence of application name and environment `name`,`environment`,'attribute' [`webserver`,`qa`,`devops`,`public`,] ."
 }
 
 variable "repository" {
@@ -17,68 +18,89 @@ variable "repository" {
   description = "Terraform current module repo"
 }
 
-variable "managedby" {
-  type        = string
-  default     = "opsstation"
-  description = "ManagedBy'opsstation'."
+variable "label_order" {
+  type        = list(any)
+  default     = ["name", "environment"]
+  description = "Label order, e.g. sequence of application name and environment `name`,`environment`,'attribute' [`webserver`,`qa`,`devops`,`public`,] ."
 }
 
-variable "name" {
+variable "managedby" {
   type        = string
-  default     = ""
-  description = "Name of the resource. Provided by the client when the resource is created. "
+  default     = "opsstation'."
+  description = "ManagedBy,opsstation'."
+}
+
+variable "extra_tags" {
+  type        = map(string)
+  default     = {}
+  description = "Additional tags for the resource."
 }
 
 variable "network" {
   type        = string
   default     = ""
-  description = "(Required) The VPC network the subnets belong to. Only networks that are in the distributed mode can have subnetworks."
+  description = "(Required) The VPC network the subnets belong to. Only networks that are in distributed mode can have subnetworks."
 }
 
-
-variable "enabled" {
-  type        = bool
-  default     = true
-  description = "A boolean flag to enable/disable firewall."
+variable "ingress_rules" {
+  description = "List of ingress firewall rules."
+  type = list(object({
+    name                    = string
+    description             = optional(string, null)
+    disabled                = optional(bool, null)
+    direction               = string # "INGRESS"
+    source_ranges           = optional(list(string), ["0.0.0.0/0"])
+    source_tags             = optional(list(string), null)
+    source_service_accounts = optional(list(string), null)
+    target_tags             = optional(list(string), null)
+    target_service_accounts = optional(list(string), null)
+    priority                = optional(number, 1000)
+    allow = optional(list(object({
+      protocol = string
+      ports    = optional(list(string), ["all"])
+    })), [])
+    deny = optional(list(object({
+      protocol = string
+      ports    = optional(list(string), null)
+    })), [])
+  }))
+  default = null
 }
 
-variable "firewall_enabled" {
-  type        = bool
-  default     = true
-  description = "A boolean flag to enable/disable firewall."
-}
-
-variable "direction" {
-  type        = string
-  default     = "INGRESS"
-  description = "Optional) Direction of traffic to which this firewall applies; default is INGRESS. Note: For INGRESS traffic, one of source_ranges, source_tags or source_service_accounts is required. Possible values are: INGRESS, EGRESS."
-}
-
-variable "disabled" {
-  type        = bool
-  default     = false
-  description = " (Optional) Denotes whether the firewall rule is disabled, i.e not applied to the network it is associated with. When set to true, the firewall rule is not enforced and the network behaves as if it did not exist. If this is unspecified, the firewall rule will be enabled."
-}
-
-variable "priority" {
-  type        = number
-  default     = 1000
-  description = "The priority of this route."
-}
-
-variable "allow" {
-  type        = list(any)
-  default     = []
-  description = "(Optional) The list of ALLOW rules specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a permitted connection."
-}
-variable "deny" {
-  type        = list(any)
-  default     = []
-  description = "(Optional) The list of deny rules specified by this firewall. Each rule specifies a protocol and port-range tuple that describes a permitted connection."
-}
-
-variable "source_ranges" {
-  type        = any
-  default     = []
-  description = "(Optional) If source ranges are specified, the firewall will apply only to traffic that has source IP address in these ranges."
+variable "egress_rules" {
+  description = "List of egress firewall rules."
+  type = list(object({
+    name                    = string
+    description             = optional(string, null)
+    disabled                = optional(bool, null)
+    direction               = string # "EGRESS"
+    destination_ranges      = optional(list(string), ["0.0.0.0/0"])
+    target_tags             = optional(list(string), null)
+    target_service_accounts = optional(list(string), null)
+    priority                = optional(number, 1000)
+    allow = optional(list(object({
+      protocol = string
+      ports    = optional(list(string), ["all"])
+    })), [])
+    deny = optional(list(object({
+      protocol = string
+      ports    = optional(list(string), null)
+    })), [])
+  }))
+  default = [
+    {
+      name               = "allow-all-egress"
+      description        = "Allow all egress traffic"
+      disabled           = false
+      direction          = "EGRESS"
+      priority           = 1000
+      destination_ranges = ["0.0.0.0/0"]
+      allow = [
+        {
+          protocol = "all"
+          ports    = []
+        }
+      ]
+    }
+  ]
 }
