@@ -30,12 +30,6 @@ variable "managedby" {
   description = "ManagedBy,opsstation'."
 }
 
-variable "extra_tags" {
-  type        = map(string)
-  default     = {}
-  description = "Additional tags for the resource."
-}
-
 variable "network" {
   type        = string
   default     = ""
